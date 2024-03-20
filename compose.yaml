@@ -1,0 +1,42 @@
+services:
+  api:
+    restart: always
+    ports:
+     - "80:80"
+     - "443:443"
+    volumes:
+      - ./api/html:/var/www/html
+      - ./api/var/spool/cron/crontabs:/var/spool/cron/crontabs
+    deploy:
+        resources:
+            limits:
+              cpus: "0.50"
+              memory: "512M"
+    build:
+      context: api
+      dockerfile: Dockerfile
+  db:
+    image: mysql
+    container_name: db
+    volumes:
+      - ./db/data:/var/lib/mysql
+    deploy:
+        resources:
+            limits:
+              cpus: "0.75"
+              memory: "512M"
+    environment:
+      - MYSQL_ROOT_PASSWORD=n1WmY0a5M5weQ2
+      - MYSQL_DATABASE=paysrv
+      - MYSQL_USER=oZemfUa2M5
+      - MYSQL_PASSWORD=mWx7mQwW1p9
+  phpmyadmin:
+    image: phpmyadmin
+    links:
+      - db
+    ports:
+      - 3306:80
+    environment:
+      - PMA_PORT=3306
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
